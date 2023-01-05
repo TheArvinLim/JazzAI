@@ -42,9 +42,9 @@ def data_pipeline(solo_melody=get_solo_melody(settings.conn),
             pipe(add_note_number, "key_center").
             pipe(add_note_number, "chord_root").
             pipe(add_note_number, "melody_note").
-            pipe(get_interval_from_note_nums, "key_center_num", "melody_note_num", "key_center_melody").
-            pipe(get_interval_from_note_nums, "key_center_num", "chord_root_num", "key_chord_root").
-            pipe(get_interval_from_note_nums, "chord_root_num", "melody_note_num", "chord_root_melody")
+            pipe(get_interval_from_note_nums, "key_center_num", "melody_note_num", "key_center_melody_interval").
+            pipe(get_interval_from_note_nums, "key_center_num", "chord_root_num", "key_chord_root_interval").
+            pipe(get_interval_from_note_nums, "chord_root_num", "melody_note_num", "chord_root_melody_interval")
     )
 
     return df
