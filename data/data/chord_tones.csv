@@ -1,0 +1,6 @@
+chord_type_base,chord_3rd,chord_5th,chord_7th
+M7,1,1,1
+m7,0,1,0
+7,1,1,0
+m7b5,0,0,0
+o7,0,0,1
