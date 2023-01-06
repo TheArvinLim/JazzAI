@@ -3,12 +3,12 @@ from src.helpers import add_lag
 
 def create_feature_matrix(joined, melody_note_lags=range(1,2), chord_root_lags=range(-1,-2,-1), chord_type_lags=range(-1,-2,-1)):
     note_sequence_df = (
-        joined[["melid", "chord_3rd", "chord_5th", "chord_7th", "chord_root_num", "melody_note_num"]].copy().
-        pipe(add_lag, "melody_note_num", melody_note_lags).
-        pipe(add_lag, "chord_root_num", chord_root_lags).
-        pipe(add_lag, "chord_3rd", chord_type_lags).
-        pipe(add_lag, "chord_5th", chord_type_lags).
-        pipe(add_lag, "chord_7th", chord_type_lags)
+        joined[["melid", "chord_3rd", "chord_5th", "chord_7th", "chord_root_num", "melody_note_num"]].copy()
+        .pipe(add_lag, "melody_note_num", melody_note_lags)
+        .pipe(add_lag, "chord_root_num", chord_root_lags)
+        .pipe(add_lag, "chord_3rd", chord_type_lags)
+        .pipe(add_lag, "chord_5th", chord_type_lags)
+        .pipe(add_lag, "chord_7th", chord_type_lags)
     )
 
     lead_lag_cols = [col for col in note_sequence_df.columns if 'melody_note_num' in col or 'chord_root_num_lead' in col]
