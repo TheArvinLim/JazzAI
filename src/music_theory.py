@@ -35,17 +35,21 @@ def add_note_number(df, note_column_name):
     return df
 
 
-def get_interval_from_note_nums(df, note_1_col, note_2_col, interval_name):
+def get_interval_from_note_nums(df, note_1_col, note_2_col, interval_name, return_numeric=False):
     df["semitone_difference"] = df[note_2_col] - df[note_1_col]
+    df = df.assign(semitone_difference = np.where(df["semitone_difference"] < 0, df["semitone_difference"] + 12, df["semitone_difference"]))
 
-    df = (
-        df.assign(semitone_difference = np.where(df["semitone_difference"] < 0, df["semitone_difference"] + 12, df["semitone_difference"])).
-                merge(SCALE_DEGREES[["semitones", "degree"]].rename(columns={"semitones": "semitone_difference", "degree": f"{interval_name}"}), on="semitone_difference", how="left")
-    )
+    if not return_numeric:
+        df = (
+            df.merge(SCALE_DEGREES[["semitones", "degree"]].rename(columns={"semitones": "semitone_difference", "degree": f"{interval_name}"}), on="semitone_difference", how="left")
+        )
 
+        df[f"{interval_name}"] = pd.Categorical(df[f"{interval_name}"], categories=['1', 'b2', '2', 'b3', '3', '4', '#4', '5', 'b6', '6', 'b7' ,'7'], ordered=True)
+
+    else:
+        df[f"{interval_name}"] = df["semitone_difference"]
+    
     df = df.drop(labels="semitone_difference", axis=1)
-
-    df[f"{interval_name}"] = pd.Categorical(df[f"{interval_name}"], categories=['1', 'b2', '2', 'b3', '3', '4', '#4', '5', 'b6', '6', 'b7' ,'7'], ordered=True)
 
     return df
 
