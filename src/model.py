@@ -11,13 +11,13 @@
 
 from sklearn.base import BaseEstimator
 import numpy as np
-import random
+import pandas as pd
 
 class NaiveModel(BaseEstimator):
     """This shows how you can create a custom model that implements BaseEstimator 
     """
     def fit(self, X, y):
-        self.classes_, y = np.unique(y, return_inverse=True)
+        self.classes_ = pd.unique(y)
 
         return self
         
@@ -33,13 +33,3 @@ class NaiveModel(BaseEstimator):
         normalised_prob_matrix = np.zeros((X.shape[0], len(self.classes_))) + 1. / len(self.classes_)
 
         return normalised_prob_matrix
-
-clf = NaiveModel()
-
-X = np.array([[1, 2], [2, 3], [3, 4], [1,3]])
-y = ["a", "b", "c", "a"]
-
-clf.fit(X, y)
-print(clf.classes_)
-print(clf.predict(X))
-print(clf.predict_proba(X))
