@@ -53,3 +53,11 @@ def get_interval_from_note_nums(df, note_1_col, note_2_col, interval_name, retur
 
     return df
 
+def calculate_note_from_interval(df, note_col, interval_col, new_note_col_name='new_note'):
+    df = df.pipe(add_note_number, note_col)
+    df = df.merge(SCALE_DEGREES[["semitones", "degree"]].rename(columns={"semitones": "semitone_difference", "degree": f"{interval_col}"}), on=f'{interval_col}', how='left')
+    df = df.assign(new_note_num = lambda x: x[f'{note_col}_num'] + x['semitone_difference'])
+    df = df.merge(MIDI_NOTE_TABLE[["midi_note", "enharmonic_note"]].rename(columns={"midi_note": "new_note_num", "enharmonic_note": f"{new_note_col_name}"}).assign(new_note_num = lambda x: x.new_note_num.astype(float) - 23), on="new_note_num", how="left")
+    df = df.drop(labels=[f'{note_col}_num', 'semitone_difference', 'new_note_num'], axis=1)
+
+    return df
