@@ -25,6 +25,7 @@ def get_solo_beats(conn):
     solo_beats["chord"] = solo_beats["chord"].replace(r'^\s*$', np.nan, regex=True).ffill()
     solo_beats["chord_root"] = solo_beats['chord'].str[:2].str.replace('\d+|-|j|m|s|\/|o|\+|NC', '', regex=True)
     solo_beats["chord_type"] = solo_beats.apply(lambda x: str(x["chord"])[len(str(x["chord_root"])):], 1)
+    solo_beats["chord_type"] = solo_beats['chord_type'].replace('', 'M7')  # base triads are to be treated as M7
     solo_beats = solo_beats.merge(CHORD_TYPES, on="chord_type", how="left")
     solo_beats = solo_beats.merge(CHORD_TONES, on="chord_type_base", how="left")
 
