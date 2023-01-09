@@ -39,18 +39,18 @@ class JazzAI:
         # init_notes = ["5", "4", "1", "b3"]  TODO: assert length matches provided lags
         # struct_df = joined.query('melid==1')[['chord_3rd', 'chord_5th', 'chord_7th', 'chord_root_num']]  # TODO assert cols
 
+        init_notes_df = pd.DataFrame(init_notes[::-1]).T
+        init_notes_df.columns = [f"chord_root_melody_lag_{i}_interval" for i in self.melody_note_lags]
+
+        struct_features_df = create_feature_matrix(struct_df, melody_note_col=None, chord_root_lags=self.chord_root_lags, chord_type_lags=self.chord_type_lags, group_by_col=None)
+
+        all_notes = generate_solo(self.clf, init_notes_df, struct_features_df)
+
+        # add on the final generated notes that are missed because of a lack of lead values.
         generated_notes = struct_df.copy()
-
-        init_notes_struct = pd.DataFrame(init_notes[::-1]).T
-        init_notes_struct.columns = [f"chord_root_melody_lag_{i}_interval" for i in self.melody_note_lags]
-
-        struct_df = create_feature_matrix(struct_df, melody_note_col=None, chord_root_lags=self.chord_root_lags, chord_type_lags=self.chord_type_lags, group_by_col=None)
-
-        all_notes = generate_solo(self.clf, init_notes_struct, struct_df)
-
-        # generated_notes['generated_notes'][:min(self.melody_note_lags + self.chord_root_lags + self.chord_type_lags)] = all_notes
         generated_notes['generated_notes'] = list(all_notes) + [pd.NA]*(-1*min(min(self.melody_note_lags), min(self.chord_root_lags), min(self.chord_type_lags)))
 
+        # add on the initially provided notes.
         generated_notes = pd.concat([pd.DataFrame(index=range(0, len(init_notes)), columns=generated_notes.columns), generated_notes])
         generated_notes.loc[0:(len(init_notes)-1), 'generated_notes'] = init_notes
 
