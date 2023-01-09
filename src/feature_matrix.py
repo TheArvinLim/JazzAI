@@ -29,6 +29,8 @@ def create_feature_matrix(joined, melody_note_col="melody_note_num", melody_note
     if group_by_col is not None:
         drop_cols = drop_cols + [group_by_col]
 
+    # TODO: instead of dropping missing lead, just make the final chord leads the same as the last chord.
+    
     note_sequence_df = note_sequence_df.drop(drop_cols, axis=1)
     note_sequence_df = note_sequence_df.dropna(axis=0)
 
