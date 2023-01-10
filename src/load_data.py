@@ -37,7 +37,7 @@ def data_pipeline(solo_melody=get_solo_melody(settings.conn),
                   solo_metadata=get_solo_metadata(settings.conn), 
                   solo_beats=get_solo_beats(settings.conn)):
     df = (
-        solo_melody[["eventid", "melid", "onset", "pitch", "melody_note", "duration", "period", "division", "bar", "beat", "beatdur"]].
+        solo_melody[["eventid", "melid", "onset", "pitch", "octave", "melody_note", "duration", "period", "division", "bar", "beat", "beatdur"]].
             merge(solo_metadata[["melid", "key", "key_center", "performer", "title"]], on="melid", how="left").
             merge(solo_beats[["melid", "chord", "chord_root", "chord_type", "chord_type_base", "chord_3rd", "chord_5th", "chord_7th", "bar", "beat"]], on=["melid",  "bar", "beat"], how="left").
             pipe(add_note_number, "key_center").
@@ -49,3 +49,6 @@ def data_pipeline(solo_melody=get_solo_melody(settings.conn),
     )
 
     return df
+
+def bass_note_pipeline(solo_beats=get_solo_beats(settings.conn)):
+    return solo_beats[['melid', 'onset', 'beat', 'bass_pitch']].merge(MIDI_NOTE_TABLE.rename(columns={"midi_note": "bass_pitch", "enharmonic_note": "bass_note"}), on="bass_pitch", how="left")
