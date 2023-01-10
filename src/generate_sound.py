@@ -1,5 +1,7 @@
 from gensound import Triangle, Silence, WhiteNoise
+import pandas as pd
 
+# TODO: don't use for loops for this.
 def generate_bassline_sounds(solo_bass_notes, bass_note_duration=0.1):
     bassline = {
         "duration": [],
@@ -65,15 +67,15 @@ def generate_snare_sounds(solo_bass_notes, snare_duration=0.1, snare_beats=[2, 4
 
     return D
 
-def generate_melody_sounds(solo_melody_notes):
+def generate_melody_sounds(solo_melody_notes, melody_note_col_name='melody_note'):
     melody = {
         "duration": [],
         "note": []
     }
 
     current_time = 0
-    for row in solo_melody_notes.iterrows():
-        
+    for row in solo_melody_notes.iterrows():   
+
         row = row[1]
         next_note_time = row['onset'] - current_time
 
@@ -82,11 +84,10 @@ def generate_melody_sounds(solo_melody_notes):
             melody["duration"].append(next_note_time)
 
 
-        melody['note'].append(row['melody_note'] + str(row['octave']))
+        melody['note'].append(str(row[melody_note_col_name]) + str(row['octave']))
         melody["duration"].append(row['duration'])
 
         current_time = row['onset'] + row['duration']
-
     S = Silence(1e3)
 
     for i in range(len(melody['duration'])):
@@ -94,10 +95,10 @@ def generate_melody_sounds(solo_melody_notes):
 
     return S
 
-def generate_solo_sounds(solo_bass_notes, solo_melody_notes, bass_note_duration=0.1, snare_duration=0.1, snare_beats=[2, 4]):
+def generate_solo_sounds(solo_bass_notes, solo_melody_notes, melody_note_col_name='melody_note', bass_note_duration=0.1, snare_duration=0.1, snare_beats=[2, 4]):
     B = generate_bassline_sounds(solo_bass_notes, bass_note_duration=bass_note_duration)
     D = generate_snare_sounds(solo_bass_notes, snare_duration=snare_duration, snare_beats=snare_beats)
-    S = generate_melody_sounds(solo_melody_notes)
+    S = generate_melody_sounds(solo_melody_notes, melody_note_col_name=melody_note_col_name)
 
     W = S + B + D
     return W
